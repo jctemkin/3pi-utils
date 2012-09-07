@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# AvrStudio Solution File, Format Version 11.00
+Project("{D1100916-62DA-4D80-A9B4-55A1E7CCEEB3}") = "passthru", "passthru.avrgccproj", "{ABAFF10D-C2B6-4942-B85E-3FF893EB26DB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ABAFF10D-C2B6-4942-B85E-3FF893EB26DB}.Debug|AVR.ActiveCfg = Debug|AVR
+		{ABAFF10D-C2B6-4942-B85E-3FF893EB26DB}.Debug|AVR.Build.0 = Debug|AVR
+		{ABAFF10D-C2B6-4942-B85E-3FF893EB26DB}.Release|AVR.ActiveCfg = Release|AVR
+		{ABAFF10D-C2B6-4942-B85E-3FF893EB26DB}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
