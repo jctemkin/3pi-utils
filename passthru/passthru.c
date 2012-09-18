@@ -21,9 +21,9 @@ unsigned int read_trimpot(void);
 	 1	 1	 brake (both motor inputs grounded)
 	 
 	Motor 2 (right):
-	PD3	PD6	Function
+	PD3	PB3	Function
 	 0	 0	 off
-	 0	 1	 forward
+	 0	 1	 forwards
 	 1	 0	 reverse
 	 1	 1	 brake (both motor inputs grounded)
 	
@@ -36,17 +36,17 @@ unsigned int read_trimpot(void);
 	 
 	/*
 	Motor values are forwarded directly.
-	M1A -> PB0
+	M1A -> PD0
 	M1B -> PB1
 	M2A -> PB4
 	M2B -> PB5
 	
 	Light sensor output values are 1 when sensor > trimpot, 0 otherwise.
-	LS1 -> PD0
+	LS1 -> PD7
 	LS2 -> PD1
 	LS3 -> PD2
 	LS4 -> PD4
-	LS5 -> PD7
+	LS5 -> PB0
 	*/
 
 int main(void)
@@ -54,7 +54,7 @@ int main(void)
 	//Analog readings from light sensors.
 	unsigned int sensors[5];
 	//Digital values of light sensors.
-	unsigned char sensor_bool[5];
+	unsigned char sensor_bool[5] = {0, 0, 0, 0, 0};
 	//Analog reading from trimpot.
 	unsigned int trimpot;
 
@@ -62,11 +62,14 @@ int main(void)
 	char m1a, m1b, m2a, m2b;
 	
 	//Set up pin polarity.
-	//B: 0011 00xx
-	//D: 1111 1111
-	DDRD = 0xFF;
-	DDRB = 0x30;
+	//B: xx00 1101
+	//D: 1111 1110
+	DDRD = 0xFE;
+	DDRB = 0x0D;
 
+	//Turn on pull-ups for motor input pins, so we brake if pins are floating.
+	PORTB = 0x32;
+	PORTD |= 0x01;
 	
 	//Initialize sensors; spend 5000 timer ticks * 0.4us/tick = 2000 us per conversion
 	pololu_3pi_init(5000);	
@@ -75,10 +78,10 @@ int main(void)
     while(1)
     {
 		//Read motor input values.
-		m1a = PORTB & ~(1 << 0);
-		m1b = PORTB & ~(1 << 1);
-		m2a = PORTB & ~(1 << 4);
-		m2b = PORTB & ~(1 << 5);
+		m1a = (PIND >> 0) & 1;
+		m1b = (PINB >> 1) & 1;
+		m2a = (PINB >> 4) & 1;
+		m2b = (PINB >> 5) & 1;
 		
 		//Read light sensors and trimpot.
         read_line_sensors(sensors, IR_EMITTERS_ON_AND_OFF);
@@ -92,10 +95,10 @@ int main(void)
 		}
 		
 		//Output values on port D.
-		PORTD = (sensor_bool[4] << 7) | (m1b << 6) | (m1a << 5) | (sensor_bool[3] << 4) | (m2a << 3) | (sensor_bool[2] << 2) | (sensor_bool[1] << 1) | sensor_bool[0];
+		PORTD = (sensor_bool[0] << 7) | (m1b << 6) | (m1a << 5) | (sensor_bool[3] << 4) | (m2a << 3) | (sensor_bool[2] << 2) | (sensor_bool[1] << 1) | 1;
 		
-		//Output low on buzzer.
-		PORTB &= ~(1 << 2);	
+		//Output m2b on PB3, and set buzzer (on PB2) low.
+		PORTB = 0x32 | (m2b << 3) | (sensor_bool[4] << 0);
     }
 }
 
